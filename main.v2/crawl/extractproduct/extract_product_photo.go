@@ -30,13 +30,13 @@ func OptimizeUrlPhoto(href string) string{
 	return href
 }
 // find url product of web photo
-func ExtractProductPhoto(url string, urlLink map[string]string) (urlProduct []string, urlLinkNew map[string]string) {
+func ExtractProductPhoto(url string, urlLink map[string]string) (urlLinkNew map[string]string) {
 	var body []byte
 	response, err := http.Get(url)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		savedata.SaveUrlError(url)
-		return urlProduct, urlLink
+		return urlLink
 	} else {
         body,_ = ioutil.ReadAll(response.Body)
         defer response.Body.Close()      
@@ -51,7 +51,7 @@ func ExtractProductPhoto(url string, urlLink map[string]string) (urlProduct []st
 				href := OptimizeUrlPhoto(href)
 				if urlLink[href] != href {
 					urlLink[href] = href
-					urlProduct = append(urlProduct, href)					
+					savedata.SaveLink(href)					
 				} 
 			}
         }
@@ -60,6 +60,6 @@ func ExtractProductPhoto(url string, urlLink map[string]string) (urlProduct []st
         }
     }
 	f(doc)
-	// return slice url product and map
-	return urlProduct, urlLink
+	// return map
+	return urlLink
 }

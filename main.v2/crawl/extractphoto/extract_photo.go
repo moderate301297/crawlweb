@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"io/ioutil"
 	"../extractproduct"
-	"../crawlproduct"
 	"../../savedata"
 )
 
@@ -72,25 +71,16 @@ func ExtractPhoto(url string, urlLink map[string]string) (urlLinkNew map[string]
 				if urlLink[href] != href {
 					var i int64
 					for i = 0; i < 25; i ++ {
-						var urlProduct []string
 						urlLink[href] = href
 						fmt.Println(href)
 						// find url product
-						urlProduct, urlLink = extractproduct.ExtractProductPhoto(href, urlLink)
-						for _, c := range urlProduct {
-							title, link, linkImage := crawlproduct.CrawlProduct(string(c))
-							if (title == "" || link == "") {
-								continue
-							}
-							// save data to mysql
-							savedata.SaveData(title, link, linkImage)
-							// next page
-							d := ScaleLinkText(href, i)
-							if d == "" || urlLink[d] == d {
-								break
-							}
-							href = d
+						urlLink = extractproduct.ExtractProductPhoto(href, urlLink)
+						// next page
+						d := ScaleLinkText(href, i)
+						if d == "" || urlLink[d] == d {
+							break
 						}
+						href = d
 					}
 				}	
 			}

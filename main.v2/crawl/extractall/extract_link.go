@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"io/ioutil"
 	"../extractproduct"
-	"../crawlproduct"
 	"../../savedata"
 )
 // check urk customer review
@@ -61,19 +60,10 @@ func ExtractAll(url string, urlLink map[string]string) (urlLinkNew map[string]st
 				href := OptimizeHref(href)
 				if urlLink[href] != href {
 					for {
-						var urlProduct []string
 						urlLink[href] = href
 						fmt.Println(href)
 						// find url of product
-						urlProduct, urlLink = extractproduct.ExtractProduct(href, urlLink)
-						for _, c := range urlProduct {
-							title, link, linkImage := crawlproduct.CrawlProduct(string(c))
-							if (title == "" || link == "") {
-								continue
-							}
-							// save data to mysql
-							savedata.SaveData(title, link, linkImage)
-						}
+						urlLink = extractproduct.ExtractProduct(href, urlLink)
 						// next page 
 						d := ScaleLinkText(href)
 						if d == "" {

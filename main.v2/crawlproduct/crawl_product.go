@@ -4,7 +4,7 @@ import(
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
-	"../../savedata"
+	"../savedata"
 	"strings"
 )
 
@@ -22,7 +22,7 @@ func CrawlProduct(url string) (title string, link string, linkImage string){
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		fmt.Println("Error: ", err)
-		savedata.SaveUrlError(url)
+		savedata.SaveLinkError(url)
 		return title, link, linkImage
 	}
 	fmt.Print("Title: ")

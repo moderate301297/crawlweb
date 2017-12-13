@@ -5,6 +5,7 @@ import(
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 	"./crawl"
+	"./crawlproduct"
 )
 // optimize url have found
 func OptimizeUrl(value string) (url string) {
@@ -179,6 +180,7 @@ func CrawlMainWeb() {
 		}
 		urlLink := crawl.Crawl(urlLinkText, urlLink)
 		crawl.CrawlPhoto(urlLinkTextPhoto, urlLink)
+		crawlproduct.QueryLink()
 	  }	  
 	})
 }

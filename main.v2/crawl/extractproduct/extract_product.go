@@ -18,13 +18,13 @@ func OptimizeUrl(value string) (url string) {
 	}
 }
 // find url product in text of token script
-func ExtractProduct(url string, urlLink map[string]string) (urlProduct []string, urlLinkNew map[string]string) {
+func ExtractProduct(url string, urlLink map[string]string) (urlLinkNew map[string]string) {
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		// save url error to my sql
 		savedata.SaveUrlError(url)
-		return urlProduct, urlLink
+		return urlLink
 	}
 	doc.Find("head script").Each(func(i int, s *goquery.Selection) {
 		var (
@@ -49,11 +49,11 @@ func ExtractProduct(url string, urlLink map[string]string) (urlProduct []string,
 				url := OptimizeUrl(value)
 				if (urlLink[url] != url){
 					urlLink[url] = url
-					urlProduct = append(urlProduct, url)
+					savedata.SaveLink(url)
 				}				
 			}
 		}
 	})
-	// return slice url product and map
-	return urlProduct, urlLink
+	// return map
+	return urlLink
 }
