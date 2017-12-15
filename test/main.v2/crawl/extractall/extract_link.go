@@ -1,14 +1,14 @@
 package extractall
 
 import (
+	"time"
 	"fmt"
 	"strings"
 	"golang.org/x/net/html"
 	"net/http"
 	"io/ioutil"
-	"../extractproduct"
-	"../../savedata"
-	"time"
+	// "../extractproduct"
+	// "../../savedata"
 )
 // check urk customer review
 func Check(href string) string {
@@ -39,18 +39,20 @@ func OptimizeHref(href string) string{
 	return href
 }
 // func recursive, find url "browse"
+var count int
+
 func ExtractAll(url string, urlLink map[string]string) (urlLinkNew map[string]string) {
 
 	var body []byte
 	response, err := http.Get(url)
 	if err != nil {
 		fmt.Println("Error: ", err)
-		savedata.SaveUrlError(url)
+		// savedata.SaveUrlError(url)
 		return
 	} else {
         body,_ = ioutil.ReadAll(response.Body)
         defer response.Body.Close()      
-    }
+	}
 	doc, _ := html.Parse(strings.NewReader(string(body)))
     var f func(*html.Node)
     f = func(n *html.Node) {
@@ -62,10 +64,9 @@ func ExtractAll(url string, urlLink map[string]string) (urlLinkNew map[string]st
 				if urlLink[href] != href {
 					for {
 						urlLink[href] = href
-						fmt.Println(href)
-						fmt.Println(time.Now())
+						count ++;
 						// find url of product
-						urlLink = extractproduct.ExtractProduct(href, urlLink)
+						// urlLink = extractproduct.ExtractProduct(href, urlLink)
 						// next page 
 						d := ScaleLinkText(href)
 						if d == "" {
@@ -73,6 +74,7 @@ func ExtractAll(url string, urlLink map[string]string) (urlLinkNew map[string]st
 						}
 						href = d
 					}
+					fmt.Println(count, time.Now())
 				}	
 			}
 			check2 := strings.Index(href, "/cp/") != -1
