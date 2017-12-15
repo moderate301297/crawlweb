@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"../extractproduct"
 	"../../savedata"
-	"time"
 )
 // check urk customer review
 func Check(href string) string {
@@ -39,6 +38,8 @@ func OptimizeHref(href string) string{
 	return href
 }
 // func recursive, find url "browse"
+var count int
+
 func ExtractAll(url string, urlLink map[string]string) (urlLinkNew map[string]string) {
 
 	var body []byte
@@ -50,7 +51,7 @@ func ExtractAll(url string, urlLink map[string]string) (urlLinkNew map[string]st
 	} else {
         body,_ = ioutil.ReadAll(response.Body)
         defer response.Body.Close()      
-    }
+	}
 	doc, _ := html.Parse(strings.NewReader(string(body)))
     var f func(*html.Node)
     f = func(n *html.Node) {
@@ -62,10 +63,9 @@ func ExtractAll(url string, urlLink map[string]string) (urlLinkNew map[string]st
 				if urlLink[href] != href {
 					for {
 						urlLink[href] = href
-						fmt.Println(href)
-						fmt.Println(time.Now())
+						count ++;
 						// find url of product
-						urlLink = extractproduct.ExtractProduct(href, urlLink)
+						go extractproduct.ExtractProduct(href)
 						// next page 
 						d := ScaleLinkText(href)
 						if d == "" {
@@ -86,7 +86,7 @@ func ExtractAll(url string, urlLink map[string]string) (urlLinkNew map[string]st
 			}
         }
         for c := n.FirstChild; c != nil; c = c.NextSibling {
-            f(c)
+            go f(c)
         }
     }
 	f(doc)

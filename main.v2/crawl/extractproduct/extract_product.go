@@ -1,13 +1,13 @@
 package extractproduct
 
 import (
+	"strings"
+	"github.com/buger/jsonparser"
 	"github.com/PuerkitoBio/goquery"
 	"fmt"
-	"strings"
 	"../../savedata"
 )
 
-// optimize url
 func OptimizeUrl(value string) (url string) {
 	if (strings.Index(value, "http") == 0){
 		url = value
@@ -17,43 +17,30 @@ func OptimizeUrl(value string) (url string) {
 		return url
 	}
 }
-// find url product in text of token script
-func ExtractProduct(url string, urlLink map[string]string) (urlLinkNew map[string]string) {
+
+func ExtractProduct(url string) {
+	var body string
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		fmt.Println("Error: ", err)
-		// save url error to my sql
-		savedata.SaveUrlError(url)
-		return urlLink
 	}
 	doc.Find("head script").Each(func(i int, s *goquery.Selection) {
-		var (
-			band string
-			index int
-		)
+		var band string
 		band = s.Text()
 		check := strings.Index(band, "__WML_REDUX_INITIAL_STATE__") != -1
 		if check {
-			for {
-				var value string
-				index = strings.Index(band, "productPageUrl")
-				if index == -1 {
-					break
-				}
-				for i := 0; string(band[index + 17 + i + 1]) != ","; i++ {
-					value = value + string(band[index + 17 + i])
-				}
-				for i := 0; i < index + 17 ; i ++ {
-					band = strings.Replace(band, string(band[i]), " ", 1)
-				}
-				url := OptimizeUrl(value)
-				if (urlLink[url] != url){
-					urlLink[url] = url
-					savedata.SaveLink(url)
-				}				
+			index := strings.Index(band, "{")
+			for i := 0; i < index ; i ++ {
+				band = strings.Replace(band, string(band[i]), " ", 1)
 			}
+			body = band	
 		}
 	})
-	// return map
-	return urlLink
+	data := []byte(body)
+	jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		b, _, _, _ := jsonparser.Get(value, "productPageUrl")
+		url := OptimizeUrl(string(b))
+		savedata.SaveLink(url)
+		fmt.Println(url)
+	}, "preso", "items")
 }

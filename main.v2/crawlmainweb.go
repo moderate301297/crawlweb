@@ -6,7 +6,6 @@ import(
 	"strings"
 	"./crawl"
 	"./crawlproduct"
-	"time"
 )
 // optimize url have found
 func OptimizeUrl(value string) (url string) {
@@ -179,8 +178,7 @@ func CrawlMainWeb() {
 				}
 			}
 		}
-		fmt.Println(time.Now())			
-		urlLink := crawl.Crawl(urlLinkText, urlLink)
+		crawl.Crawl(urlLinkText, urlLink)
 		crawl.CrawlPhoto(urlLinkTextPhoto, urlLink)
 		crawlproduct.QueryLink()
 	  }	  
