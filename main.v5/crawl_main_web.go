@@ -44,17 +44,17 @@ func main() {
 	shopCategory,_,_,_ := jsonparser.Get(data, "header", "quimbyData", "global_header", "headerZone3", "configs", "departments")
 	jsonparser.ArrayEach(shopCategory, func(value1 []byte, dataType jsonparser.ValueType, offset int, err error) {
 		level1, _, _, _ := jsonparser.Get(value1, "departments")
-		var url []string
+		var urlSlice []string
 		jsonparser.ArrayEach(level1, func(value2 []byte, dataType jsonparser.ValueType, offset int, err error) {
 			level2, _, _, _ := jsonparser.Get(value2, "department")		
 			value, _, _, _ := jsonparser.Get(level2, "clickThrough", "value")
-			href := OptimizeUrl(string(value))
-			_, check := urlMap[href]
+			url := OptimizeUrl(string(value))
+			_, check := urlMap[url]
 			if !check {
-				urlMap[href] = true
-				url = append(url, href)
+				urlMap[url] = true
+				urlSlice = append(urlSlice, url)
 			}
 		})
-		crawl.Crawl(url, urlMap)
-	})	
+		crawl.Crawl(urlSlice, urlMap)
+	})
 }

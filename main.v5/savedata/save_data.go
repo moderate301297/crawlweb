@@ -20,8 +20,8 @@ func SaveDataBody(body string) {
 }
 
 // save data to mysql
-func SaveData(title string, link string, linkImage string) {
-	_,err := dbconnection.Connect.Exec("insert all_products set title= ?, link = ?, link_image = ?", title, link, linkImage)
+func SaveData(title string, linkPath string, linkImage string, link string) {
+	_,err := dbconnection.Connect.Exec("insert all_products set title= ?, link_path = ?, link_image = ?, link = ?", title, linkPath, linkImage, link)
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}

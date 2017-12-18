@@ -46,7 +46,7 @@ func OptimizeHref(href string) string{
 }
 
 // find url have "/category/"
-func CrawlProductPhoto(url string, urlLink map[string]bool) (urlMap map[string]bool) {
+func CrawlProductPhoto(url string, urlMap map[string]bool) (urlMapNew map[string]bool) {
 
 	var body []byte
 	var urlSlice []string

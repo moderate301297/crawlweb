@@ -63,11 +63,11 @@ func CrawlPhoto(url string) {
 			check1 := strings.Index(href, "/about/") != -1 
 			if check1 {
 				href := Check(href)
-				url := OptimizeHref(href)
-				_, checkUrl := urlMap[url] 
+				urlNew := OptimizeHref(href)
+				_, checkUrl := urlMap[urlNew] 
 				if !checkUrl {
-					urlMap[url] = true
-					urlMap = crawlproductphoto.CrawlProductPhoto(href, urlMap)
+					urlMap[urlNew] = true
+					urlMap = crawlproductphoto.CrawlProductPhoto(urlNew, urlMap)
 				}	
 			}
         }
