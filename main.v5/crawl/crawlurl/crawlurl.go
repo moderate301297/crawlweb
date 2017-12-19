@@ -58,7 +58,8 @@ func CrawlUrl(url string, urlMap map[string]bool) (urlMapNew map[string]bool){
 					title, _, _, _ := jsonparser.Get(value, "title")
 					imageUrl, _, _, _ := jsonparser.Get(value, "imageUrl")
 					url, _, _, _ := jsonparser.Get(value, "productPageUrl")
-					savedata.SaveData(string(title), string(dataPath), string(imageUrl), string(url))
+					link := OptimizeUrl(string(url))
+					savedata.SaveData(string(title), string(dataPath), string(imageUrl), link)
 				}, "items")
 			} (url)
 			// next page

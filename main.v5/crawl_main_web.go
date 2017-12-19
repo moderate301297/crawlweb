@@ -1,15 +1,16 @@
 package main
 
 import (
-	"strings"
-	"github.com/buger/jsonparser"
-	"github.com/PuerkitoBio/goquery"
 	"fmt"
+	"strings"
+
 	"./crawl"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/buger/jsonparser"
 )
 
 func OptimizeUrl(value string) (url string) {
-	if (strings.Index(value, "http") == 0){
+	if strings.Index(value, "http") == 0 {
 		url = value
 		return url
 	} else {
@@ -30,31 +31,29 @@ func main() {
 		check := strings.Index(band, "_setReduxState") != -1
 		if check {
 			index := strings.Index(band, "= {")
-			for i := 0; i < index +1 ; i ++ {
+			for i := 0; i < index+1; i++ {
 				band = strings.Replace(band, string(band[i]), " ", 1)
 			}
-			for i := 0; i < len(band) - 3 ; i ++ {
+			for i := 0; i < len(band)-3; i++ {
 				body = body + string(band[i])
 			}
-			
+
 		}
 	})
 	urlMap := make(map[string]bool)
 	data := []byte(body)
-	shopCategory,_,_,_ := jsonparser.Get(data, "header", "quimbyData", "global_header", "headerZone3", "configs", "departments")
-	jsonparser.ArrayEach(shopCategory, func(value1 []byte, dataType jsonparser.ValueType, offset int, err error) {
-		level1, _, _, _ := jsonparser.Get(value1, "departments")
-		var urlSlice []string
-		jsonparser.ArrayEach(level1, func(value2 []byte, dataType jsonparser.ValueType, offset int, err error) {
-			level2, _, _, _ := jsonparser.Get(value2, "department")		
-			value, _, _, _ := jsonparser.Get(level2, "clickThrough", "value")
-			url := OptimizeUrl(string(value))
-			_, check := urlMap[url]
-			if !check {
-				urlMap[url] = true
-				urlSlice = append(urlSlice, url)
-			}
-		})
-		crawl.Crawl(urlSlice, urlMap)
+	shopCategory, _, _, _ := jsonparser.Get(data, "header", "quimbyData", "global_header", "headerZone3", "configs", "departments", "[0]")
+	level1, _, _, _ := jsonparser.Get(shopCategory, "departments")
+	var urlSlice []string
+	jsonparser.ArrayEach(level1, func(value2 []byte, dataType jsonparser.ValueType, offset int, err error) {
+		level2, _, _, _ := jsonparser.Get(value2, "department")
+		value, _, _, _ := jsonparser.Get(level2, "clickThrough", "value")
+		url := OptimizeUrl(string(value))
+		_, check := urlMap[url]
+		if !check {
+			urlMap[url] = true
+			urlSlice = append(urlSlice, url)
+		}
 	})
+	crawl.Crawl(urlSlice, urlMap)
 }
